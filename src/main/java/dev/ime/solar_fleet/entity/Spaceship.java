@@ -1,22 +1,37 @@
 package dev.ime.solar_fleet.entity;
 
 import io.quarkus.mongodb.panache.common.MongoEntity;
-
 import java.util.Objects;
-
 import org.bson.types.ObjectId;
 
-@MongoEntity
+
+@MongoEntity(database = "solarfleetdb", collection= "spaceship")
 public class Spaceship {
 	
 	private ObjectId id;
 	
 	private String name;
 	
-	private Long shipClass;
+	private ObjectId shipClassId;
 
 	public Spaceship() {
 		super();		
+	}	
+	
+	public Spaceship(ObjectId id, String name, ObjectId shipClassId) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.shipClassId = shipClassId;
+	}
+
+
+	public ObjectId getShipClassId() {
+		return shipClassId;
+	}
+
+	public void setShipClassId(ObjectId shipClassId) {
+		this.shipClassId = shipClassId;
 	}
 
 	public ObjectId getId() {
@@ -35,17 +50,9 @@ public class Spaceship {
 		this.name = name;
 	}
 
-	public Long getShipClass() {
-		return shipClass;
-	}
-
-	public void setShipClass(Long shipClass) {
-		this.shipClass = shipClass;
-	}
-
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, shipClass);
+		return Objects.hash(id, name, shipClassId);
 	}
 
 	@Override
@@ -58,14 +65,12 @@ public class Spaceship {
 			return false;
 		Spaceship other = (Spaceship) obj;
 		return Objects.equals(id, other.id) && Objects.equals(name, other.name)
-				&& Objects.equals(shipClass, other.shipClass);
+				&& Objects.equals(shipClassId, other.shipClassId);
 	}
 
 	@Override
 	public String toString() {
-		return "Spaceship [id=" + id + ", name=" + name + ", shipClass=" + shipClass + "]";
+		return "Spaceship [id=" + id + ", name=" + name + ", shipClassId=" + shipClassId + "]";
 	}
-	
-	
 	
 }
