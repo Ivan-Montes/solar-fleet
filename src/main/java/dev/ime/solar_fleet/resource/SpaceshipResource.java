@@ -9,6 +9,7 @@ import dev.ime.solar_fleet.dto.spaceship.SpaceshipUpdateDto;
 import dev.ime.solar_fleet.entity.Spaceship;
 import dev.ime.solar_fleet.mapper.SpaceshipMapper;
 import dev.ime.solar_fleet.service.SpaceshipServiceImpl;
+import dev.ime.solar_fleet.tool.MsgStatus;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -38,7 +39,7 @@ public class SpaceshipResource {
 	public Response getAll(){
 		
 		List<Spaceship>list = spaceshipServiceImpl.getAll();
-		return list.isEmpty()?	Response.ok("\"error\": \"Empty List -_-\"").build()
+		return list.isEmpty()?	Response.ok(MsgStatus.EMPTY_LIST).build()
 								:Response.ok(list.stream()
 												.map(spaceshipMapper::toSpaceshipDto)
 												.toList())
@@ -48,11 +49,16 @@ public class SpaceshipResource {
 	@GET
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-	public Response getById(@PathParam("id") ObjectId id) {
+	public Response getById(@PathParam("id") String id) {
 		
-		Optional<Spaceship> opt = spaceshipServiceImpl.getById(id);		
+		if( !ObjectId.isValid(id) ){			
+			return Response.status(400).entity(MsgStatus.INVALID_OBJECTID).build();
+		}
+		
+		Optional<Spaceship> opt = spaceshipServiceImpl.getById(new ObjectId(id));	
+		
 		return opt.isPresent()? Response.ok( spaceshipMapper.toSpaceshipDto( opt.get() ) ).build()
-								:Response.ok("\"error\": \"User not found\"").build();
+								:Response.ok(MsgStatus.RESOURCE_NOT_FOUND).build();
 		
 	}
 	
@@ -72,9 +78,13 @@ public class SpaceshipResource {
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-	public Response update(@PathParam("id") ObjectId id, SpaceshipUpdateDto dto) {
+	public Response update(@PathParam("id") String id, SpaceshipUpdateDto dto) {
 		
-		Optional<Spaceship> opt = spaceshipServiceImpl.update(id, spaceshipMapper.toSpaceshipFromUpdate(dto));
+		if( !ObjectId.isValid(id) ){			
+			return Response.status(400).entity(MsgStatus.INVALID_OBJECTID).build();
+		}
+		
+		Optional<Spaceship> opt = spaceshipServiceImpl.update(new ObjectId(id), spaceshipMapper.toSpaceshipFromUpdate(dto));
 		return opt.isPresent()? Response.ok( spaceshipMapper.toSpaceshipDto( opt.get() ) ).build()
 								:Response.status(Response.Status.NOT_FOUND).build();
 	}
@@ -82,11 +92,15 @@ public class SpaceshipResource {
 	@DELETE
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-	public Response delete(@PathParam("id") ObjectId id) {
+	public Response delete(@PathParam("id") String id) {
+
+		if( !ObjectId.isValid(id) ){			
+			return Response.status(400).entity(MsgStatus.INVALID_OBJECTID).build();
+		}
 		
-		return spaceshipServiceImpl.delete(id) == 0? Response.ok("\"error\": \"Entity deleted\"").build()
+		return spaceshipServiceImpl.delete(new ObjectId(id)) == 0? Response.ok(MsgStatus.ENTITY_DELETED).build()
 													:Response.status(Response.Status.NOT_FOUND)
-															.entity("\"error\": \"Entity NOT deleted\"")
+															.entity(MsgStatus.ENTITY_NOT_DELETED)
 															.build();		
 	}
 	
