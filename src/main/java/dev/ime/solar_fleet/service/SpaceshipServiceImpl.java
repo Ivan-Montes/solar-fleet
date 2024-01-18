@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
+
+import dev.ime.solar_fleet.entity.ShipClass;
 import dev.ime.solar_fleet.entity.Spaceship;
+import dev.ime.solar_fleet.repository.ShipClassRepository;
 import dev.ime.solar_fleet.repository.SpaceshipRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -12,17 +15,22 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class SpaceshipServiceImpl implements GenericService<Spaceship>{
 	
-	private final SpaceshipRepository spaceshipRepository;	
+	private final SpaceshipRepository spaceshipRepository;
+	private final ShipClassRepository shipClassRepository;
 	
 	@Inject
-	public SpaceshipServiceImpl(SpaceshipRepository spaceshipRepository) {
+	public SpaceshipServiceImpl(SpaceshipRepository spaceshipRepository, ShipClassRepository shipClassRepository) {
+		super();
 		this.spaceshipRepository = spaceshipRepository;
+		this.shipClassRepository = shipClassRepository;
 	}
 
 	@Override
 	public List<Spaceship> getAll() {
 		return spaceshipRepository.findAll().list();
 	}
+
+	
 
 	@Override
 	public Optional<Spaceship> getById(ObjectId id) {
@@ -31,8 +39,21 @@ public class SpaceshipServiceImpl implements GenericService<Spaceship>{
 
 	@Override
 	public Optional<Spaceship> create(Spaceship entity) {
-		spaceshipRepository.persist(entity);		
-		return Optional.ofNullable(entity);
+
+		ObjectId shipClassId = entity.getShipClassId();
+
+		if (shipClassId == null || !ObjectId.isValid(shipClassId.toString())) {
+	        return Optional.empty();
+	    }
+		
+		Optional<ShipClass> opt = Optional.ofNullable( shipClassRepository.findById(shipClassId) );
+		
+		if ( opt.isPresent() ) {
+			spaceshipRepository.persist(entity);
+			return Optional.ofNullable(entity);		
+		}
+		
+		return Optional.empty();
 	}
 
 	@Override
