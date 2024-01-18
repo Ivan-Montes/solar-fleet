@@ -9,6 +9,7 @@ import dev.ime.solar_fleet.dto.spaceship.SpaceshipUpdateDto;
 import dev.ime.solar_fleet.entity.Spaceship;
 import dev.ime.solar_fleet.mapper.SpaceshipMapper;
 import dev.ime.solar_fleet.service.SpaceshipServiceImpl;
+import dev.ime.solar_fleet.tool.Checker;
 import dev.ime.solar_fleet.tool.MsgStatus;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -28,11 +29,13 @@ public class SpaceshipResource {
 
 	private final SpaceshipServiceImpl spaceshipServiceImpl;	
 	private final SpaceshipMapper spaceshipMapper;
+	private final Checker checker;
 	
 	@Inject
-	public SpaceshipResource(SpaceshipServiceImpl spaceshipServiceImpl, SpaceshipMapper spaceshipMapper) {
+	public SpaceshipResource(SpaceshipServiceImpl spaceshipServiceImpl, SpaceshipMapper spaceshipMapper, Checker checker) {
 		this.spaceshipServiceImpl = spaceshipServiceImpl;
 		this.spaceshipMapper = spaceshipMapper;
+		this.checker = checker;
 	}
 
 	@GET
@@ -41,17 +44,14 @@ public class SpaceshipResource {
 		
 		List<Spaceship>list;
 		
-		if (page != null && page.matches("^[1-9]\\d*$") ) {
+		if ( checker.checkPage(page) ) {
 			list = spaceshipServiceImpl.getAllPaged(Integer.valueOf(page));
         } else {
         	list = spaceshipServiceImpl.getAll();  		
         }
 		
 		return list.isEmpty()?	Response.ok(MsgStatus.EMPTY_LIST).build()
-								:Response.ok(list.stream()
-												.map(spaceshipMapper::toSpaceshipDto)
-												.toList())
-											.build();	
+								:Response.ok(spaceshipMapper.toListSpaceshipDto(list)).build();	
 	}		
 	
 	@GET
