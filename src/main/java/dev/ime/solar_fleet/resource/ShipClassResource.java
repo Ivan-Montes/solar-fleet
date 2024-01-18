@@ -10,6 +10,7 @@ import dev.ime.solar_fleet.dto.shipclass.ShipClassDto;
 import dev.ime.solar_fleet.entity.ShipClass;
 import dev.ime.solar_fleet.mapper.ShipClassMapper;
 import dev.ime.solar_fleet.service.ShipClassServiceImpl;
+import dev.ime.solar_fleet.tool.Checker;
 import dev.ime.solar_fleet.tool.MsgStatus;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -29,11 +30,13 @@ public class ShipClassResource {
 
 	private final ShipClassServiceImpl shipClassServiceImpl;
 	private final ShipClassMapper shipClassMapper;
+	private final Checker checker;
 	
 	@Inject
-	public ShipClassResource(ShipClassServiceImpl shipClassServiceImpl, ShipClassMapper shipClassMapper) {
+	public ShipClassResource(ShipClassServiceImpl shipClassServiceImpl, ShipClassMapper shipClassMapper, Checker checker) {
 		this.shipClassServiceImpl = shipClassServiceImpl;
 		this.shipClassMapper = shipClassMapper;
+		this.checker = checker;
 	}
 	
 	@GET
@@ -42,7 +45,7 @@ public class ShipClassResource {
 		
 		List<ShipClass>list;
 		
-		if (page != null && page.matches("^[1-9]\\d*$") ) {
+		if ( checker.checkPage(page) ) {
 			list = shipClassServiceImpl.getAllPaged(Integer.valueOf(page));
         } else {
         	list = shipClassServiceImpl.getAll();    		
