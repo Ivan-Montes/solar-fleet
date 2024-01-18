@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import dev.ime.solar_fleet.dto.shipclass.ShipClassDto;
 import dev.ime.solar_fleet.entity.ShipClass;
@@ -24,7 +26,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-
+@Tag(name = "ShipClass", description="ShipClass Operations")
 @Path("/api/shipclasses")
 public class ShipClassResource {
 
@@ -40,7 +42,7 @@ public class ShipClassResource {
 	}
 	
 	@GET
-    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Get a List of all ShipClass", description="Get a List of all ShipClass, @return an object Response with a List of DTO's")
 	public Response getAll(@QueryParam("page")String page) {
 		
 		List<ShipClass>list;
@@ -57,6 +59,7 @@ public class ShipClassResource {
 	
 	@GET
 	@Path("/{id}")
+	@Operation(summary="Get a ShipClass according to an Id", description="Get a ShipClass according to an Id, @return an object Response with the ShipClass required in a DTO")
 	public Response getById(@PathParam("id") String id) {
 		
 		if( !ObjectId.isValid(id) ){			
@@ -71,6 +74,7 @@ public class ShipClassResource {
 	}
 	
 	@POST
+	@Operation(summary="Create a new ShipClass", description="Create a new ShipClass, @return an object Response with the ShipClass in a DTO")
 	public Response create(ShipClassDto dto) {
 		
 		Optional<ShipClass>opt = shipClassServiceImpl.create(shipClassMapper.toShipClass(dto));
@@ -83,6 +87,7 @@ public class ShipClassResource {
 	
 	@PUT
 	@Path("/{id}")
+	@Operation(summary="Update fields in a ShipClass", description="Update fields in a ShipClass, @return an object Response with the ShipClass modified in a DTO")
 	public Response update(@PathParam("id") String id, ShipClassDto dto) {
 		
 		if( !ObjectId.isValid(id) ){			
@@ -98,6 +103,7 @@ public class ShipClassResource {
 	
 	@DELETE
 	@Path("/{id}")
+	@Operation(summary="Delete a ShipClass by its Id", description="Delete a ShipClass by its Id, @return an object Response with a message")
 	public Response delete(@PathParam("id") String id) {
 
 		if( !ObjectId.isValid(id) ){			
