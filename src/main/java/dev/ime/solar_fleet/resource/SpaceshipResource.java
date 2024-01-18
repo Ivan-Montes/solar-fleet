@@ -19,6 +19,7 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -36,9 +37,16 @@ public class SpaceshipResource {
 
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-	public Response getAll(){
+	public Response getAll(@QueryParam("page")String page){
 		
-		List<Spaceship>list = spaceshipServiceImpl.getAll();
+		List<Spaceship>list;
+		
+		if (page != null && page.matches("^[1-9]\\d*$") ) {
+			list = spaceshipServiceImpl.getAllPaged(Integer.valueOf(page));
+        } else {
+        	list = spaceshipServiceImpl.getAll();  		
+        }
+		
 		return list.isEmpty()?	Response.ok(MsgStatus.EMPTY_LIST).build()
 								:Response.ok(list.stream()
 												.map(spaceshipMapper::toSpaceshipDto)
@@ -68,10 +76,11 @@ public class SpaceshipResource {
 	public Response create(SpaceshipCreateDto dto) {
 		
 		Optional<Spaceship> opt = spaceshipServiceImpl.create(spaceshipMapper.toSpaceshipFromCreate(dto));
+		
 		return opt.isPresent()? Response.status(Response.Status.CREATED)
 										.entity( spaceshipMapper.toSpaceshipDto( opt.get() ) )
 										.build()
-								:Response.status(Response.Status.NOT_FOUND).build();
+								:Response.status(Response.Status.NOT_FOUND).entity(MsgStatus.RESOURCE_NOT_FOUND).build();
 	}
 	
 	@PUT
@@ -86,7 +95,7 @@ public class SpaceshipResource {
 		
 		Optional<Spaceship> opt = spaceshipServiceImpl.update(new ObjectId(id), spaceshipMapper.toSpaceshipFromUpdate(dto));
 		return opt.isPresent()? Response.ok( spaceshipMapper.toSpaceshipDto( opt.get() ) ).build()
-								:Response.status(Response.Status.NOT_FOUND).build();
+								:Response.status(Response.Status.NOT_FOUND).entity(MsgStatus.RESOURCE_NOT_FOUND).build();
 	}
 	
 	@DELETE
