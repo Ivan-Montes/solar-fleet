@@ -1,6 +1,9 @@
 package dev.ime.solar_fleet.resource;
 
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +27,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+@Tag(name = "Spaceship", description="Spaceship Operations")
 @Path("/api/spaceships")
 public class SpaceshipResource {
 
@@ -40,6 +44,7 @@ public class SpaceshipResource {
 
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Get a List of all Spaceship", description="Get a List of all Spaceship, @return an object Response with a List of DTO's")
 	public Response getAll(@QueryParam("page")String page){
 		
 		List<Spaceship>list;
@@ -57,6 +62,8 @@ public class SpaceshipResource {
 	@GET
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Get a Spaceship according to an Id", description="Get a Spaceship according to an Id, @return an object Response with the Spaceship required in a DTO")
+	
 	public Response getById(@PathParam("id") String id) {
 		
 		if( !ObjectId.isValid(id) ){			
@@ -73,6 +80,7 @@ public class SpaceshipResource {
 	@POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Create a new Spaceship", description="Create a new Spaceship, @return an object Response with the Spaceship in a DTO")
 	public Response create(SpaceshipCreateDto dto) {
 		
 		Optional<Spaceship> opt = spaceshipServiceImpl.create(spaceshipMapper.toSpaceshipFromCreate(dto));
@@ -87,6 +95,7 @@ public class SpaceshipResource {
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+	@Operation(summary="Update fields in a Spaceship", description="Update fields in a Spaceship, @return an object Response with the Spaceship modified in a DTO")
 	public Response update(@PathParam("id") String id, SpaceshipUpdateDto dto) {
 		
 		if( !ObjectId.isValid(id) ){			
@@ -101,6 +110,7 @@ public class SpaceshipResource {
 	@DELETE
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(summary="Delete a Spaceship by its Id", description="Delete a Spaceship by its Id, @return an object Response with a message")
 	public Response delete(@PathParam("id") String id) {
 
 		if( !ObjectId.isValid(id) ){			
