@@ -15,5 +15,10 @@ public class Checker {
 	       
 	}
 	
+	public boolean checkPage(String page) {
+		
+		return page != null && page.matches("^[1-9]\\d*$");
+		
+	}
 	
 }
