@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 public interface GenericService<T> {
 
 	List<T>getAll();
+	List<T>getAllPaged(int page);
 	Optional<T> getById(ObjectId id);
 	Optional<T> create(T entity);
 	Optional<T> update(ObjectId id, T entity);
