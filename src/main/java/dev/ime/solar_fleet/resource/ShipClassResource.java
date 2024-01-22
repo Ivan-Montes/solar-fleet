@@ -8,13 +8,16 @@ import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import dev.ime.solar_fleet.dto.shipclass.ShipClassDto;
+import dev.ime.solar_fleet.dto.shipclass.ShipClassCreateDto;
+import dev.ime.solar_fleet.dto.shipclass.ShipClassUpdateDto;
 import dev.ime.solar_fleet.entity.ShipClass;
 import dev.ime.solar_fleet.mapper.ShipClassMapper;
 import dev.ime.solar_fleet.service.ShipClassServiceImpl;
 import dev.ime.solar_fleet.tool.Checker;
 import dev.ime.solar_fleet.tool.MsgStatus;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -42,6 +45,7 @@ public class ShipClassResource {
 	}
 	
 	@GET
+    @Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Get a List of all ShipClass", description="Get a List of all ShipClass, @return an object Response with a List of DTO's")
 	public Response getAll(@QueryParam("page")String page) {
 		
@@ -59,6 +63,7 @@ public class ShipClassResource {
 	
 	@GET
 	@Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Get a ShipClass according to an Id", description="Get a ShipClass according to an Id, @return an object Response with the ShipClass required in a DTO")
 	public Response getById(@PathParam("id") String id) {
 		
@@ -74,10 +79,12 @@ public class ShipClassResource {
 	}
 	
 	@POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Create a new ShipClass", description="Create a new ShipClass, @return an object Response with the ShipClass in a DTO")
-	public Response create(ShipClassDto dto) {
+	public Response create(@Valid ShipClassCreateDto dto) {
 		
-		Optional<ShipClass>opt = shipClassServiceImpl.create(shipClassMapper.toShipClass(dto));
+		Optional<ShipClass>opt = shipClassServiceImpl.create(shipClassMapper.toShipClassFromShipClassCreateDto(dto));
 		
 		return opt.isPresent()? Response.status(Response.Status.CREATED)
 									.entity( shipClassMapper.toShipClassDto( opt.get() ) )
@@ -87,14 +94,16 @@ public class ShipClassResource {
 	
 	@PUT
 	@Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Update fields in a ShipClass", description="Update fields in a ShipClass, @return an object Response with the ShipClass modified in a DTO")
-	public Response update(@PathParam("id") String id, ShipClassDto dto) {
+	public Response update(@PathParam("id") String id, @Valid ShipClassUpdateDto dto) {
 		
 		if( !ObjectId.isValid(id) ){			
 			return Response.status(400).entity(MsgStatus.INVALID_OBJECTID).build();
 		}
 		
-		Optional<ShipClass>opt = shipClassServiceImpl.update(new ObjectId(id), shipClassMapper.toShipClass(dto));
+		Optional<ShipClass>opt = shipClassServiceImpl.update(new ObjectId(id), shipClassMapper.toShipClassFromShipClassUpdateDto(dto));
 		
 		return opt.isPresent()? Response.ok(shipClassMapper.toShipClassDto(opt.get())).build()
 								:Response.status(Response.Status.NOT_FOUND).entity(MsgStatus.RESOURCE_NOT_FOUND).build();	
@@ -103,6 +112,7 @@ public class ShipClassResource {
 	
 	@DELETE
 	@Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Delete a ShipClass by its Id", description="Delete a ShipClass by its Id, @return an object Response with a message")
 	public Response delete(@PathParam("id") String id) {
 
