@@ -15,6 +15,7 @@ import dev.ime.solar_fleet.service.SpaceshipServiceImpl;
 import dev.ime.solar_fleet.tool.Checker;
 import dev.ime.solar_fleet.tool.MsgStatus;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -73,7 +74,7 @@ public class SpaceshipResource {
 		Optional<Spaceship> opt = spaceshipServiceImpl.getById(new ObjectId(id));	
 		
 		return opt.isPresent()? Response.ok( spaceshipMapper.toSpaceshipDto( opt.get() ) ).build()
-								:Response.ok(MsgStatus.RESOURCE_NOT_FOUND).build();
+								:Response.status(Response.Status.NOT_FOUND).entity(MsgStatus.RESOURCE_NOT_FOUND).build();
 		
 	}
 	
@@ -81,7 +82,7 @@ public class SpaceshipResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Operation(summary="Create a new Spaceship", description="Create a new Spaceship, @return an object Response with the Spaceship in a DTO")
-	public Response create(SpaceshipCreateDto dto) {
+	public Response create(@Valid SpaceshipCreateDto dto) {
 		
 		Optional<Spaceship> opt = spaceshipServiceImpl.create(spaceshipMapper.toSpaceshipFromCreate(dto));
 		
@@ -96,7 +97,7 @@ public class SpaceshipResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
 	@Operation(summary="Update fields in a Spaceship", description="Update fields in a Spaceship, @return an object Response with the Spaceship modified in a DTO")
-	public Response update(@PathParam("id") String id, SpaceshipUpdateDto dto) {
+	public Response update(@PathParam("id") String id, @Valid SpaceshipUpdateDto dto) {
 		
 		if( !ObjectId.isValid(id) ){			
 			return Response.status(400).entity(MsgStatus.INVALID_OBJECTID).build();
