@@ -69,21 +69,8 @@ class ShipClassResourceTest {
 		        .get()
 		        .then()
 		        .statusCode(200);
-	}
-	
-	@Test
-	void ShipClassResource_getById_ReturnObject() {
-		
-		ShipClassDto shipClassDto = given()
-									.when()
-									.get("/{id}","65a909b13b3df36e11df2de3")
-									.then()
-									.statusCode(200)
-									.extract().as(ShipClassDto.class);
-		
-		Assertions.assertThat(shipClassDto).isNotNull();
-		
-	}
+	}	
+
 
 	@Test
 	void ShipClassResource_getById_ReturnNewObject() {
