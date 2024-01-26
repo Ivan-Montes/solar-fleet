@@ -53,7 +53,7 @@ class ShipClassServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_getAll_ReturnList() {		
+	void ShipClassServiceImpl_getAll_ReturnList() {		
 		
 		shipclasses.add(shipClassTest);
 		doReturn(shipclasses).when(shipClassRepositoryMock).listAll();
@@ -68,7 +68,7 @@ class ShipClassServiceImplTest {
 	}
 
 	@Test
-	void SpaceshipServiceImpl_getById_ReturnObject() {
+	void ShipClassServiceImpl_getById_ReturnObject() {
 		
 		doReturn(shipClassTest).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
 		
@@ -82,7 +82,7 @@ class ShipClassServiceImplTest {
 	}
 
 	@Test
-	void SpaceshipServiceImpl_getById_ReturnNull() {
+	void ShipClassServiceImpl_getById_ReturnNull() {
 		
 		doReturn(null).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
 		
@@ -96,7 +96,7 @@ class ShipClassServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_create_ReturnObject() {
+	void ShipClassServiceImpl_create_ReturnObject() {
 		
 		doNothing().when(shipClassRepositoryMock).persist(Mockito.any(ShipClass.class));
 		
@@ -110,7 +110,7 @@ class ShipClassServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_update_ReturnObject() {
+	void ShipClassServiceImpl_update_ReturnObject() {
 		
 		doReturn(shipClassTest).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
 		doNothing().when(shipClassRepositoryMock).persistOrUpdate(Mockito.any(ShipClass.class));
@@ -126,7 +126,7 @@ class ShipClassServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_update_ReturnNull() {
+	void ShipClassServiceImpl_update_ReturnNull() {
 		
 		doReturn(null).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
 		
@@ -141,7 +141,7 @@ class ShipClassServiceImplTest {
 
 
 	@Test
-	void SpaceshipServiceImpl_delete_ReturnInt() {
+	void ShipClassServiceImpl_delete_ReturnInt() {
 		
 		doReturn(true).when(checkerMock).checkObjectId(Mockito.any(ObjectId.class));
 		doReturn(shipClassTest).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
@@ -155,7 +155,7 @@ class ShipClassServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_delete_ReturnIntNotFound() {
+	void ShipClassServiceImpl_delete_ReturnIntNotFound() {
 		
 		doReturn(true).when(checkerMock).checkObjectId(Mockito.any(ObjectId.class));
 		doReturn(null).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
@@ -167,7 +167,7 @@ class ShipClassServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_delete_ReturnIntBadObjectId() {
+	void ShipClassServiceImpl_delete_ReturnIntBadObjectId() {
 		
 		doReturn(false).when(checkerMock).checkObjectId(Mockito.any(ObjectId.class));
 		
