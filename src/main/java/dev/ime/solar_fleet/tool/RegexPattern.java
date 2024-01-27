@@ -12,6 +12,6 @@ public class RegexPattern {
 	public static final String LASTNAME_BASIC = "[a-zA-ZñÑáéíóúÁÉÍÓÚ\\s\\-\\.&,:]+";
 	public static final String LASTFULL = "[a-zA-ZñÑáéíóúÁÉÍÓÚ\\s\\-\\.&,:]{1,50}";
 	public static final String PAGE = "^[1-9]\\d*$";
-	
+	public static final String OBJECT_ID = "^[0-9a-fA-F]{24}$";
 	
 }
