@@ -2,6 +2,7 @@ package dev.ime.solar_fleet.resource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -89,8 +90,10 @@ class SpaceshipResourceTest {
 		.statusCode(200)
 		.extract().as(SpaceshipDto.class);
 		
-		Assertions.assertThat(spaceshipDto).isNotNull();
-		Assertions.assertThat(spaceshipDto.name()).isEqualTo(spaceshipTest.getName());
+		assertAll(
+				()->Assertions.assertThat(spaceshipDto).isNotNull(),
+				()->Assertions.assertThat(spaceshipDto.name()).isEqualTo(spaceshipTest.getName())
+				);
 		Mockito.verify(spaceshipServiceImplMock,times(1)).getById(Mockito.any());
 	}
 	
@@ -137,9 +140,10 @@ class SpaceshipResourceTest {
 									.then()
 									.statusCode(201)
 									.extract().as(SpaceshipDto.class);
-		
-		Assertions.assertThat(spaceshipDto).isNotNull();
-		Assertions.assertThat(spaceshipDto.name()).isEqualTo(spaceshipCreateDto.name());
+		assertAll(
+				()->Assertions.assertThat(spaceshipDto).isNotNull(),
+				()->Assertions.assertThat(spaceshipDto.name()).isEqualTo(spaceshipCreateDto.name())
+				);
 		Mockito.verify(spaceshipServiceImplMock,times(1)).create(Mockito.any());
 
 	}
@@ -178,8 +182,10 @@ class SpaceshipResourceTest {
 				.statusCode(200)
 		        .extract().as(SpaceshipDto.class);
 		
-		Assertions.assertThat(updated).isNotNull();
-		Assertions.assertThat(updated.name()).isEqualTo(spaceshipUpdateDto.name());
+		assertAll(
+				()->Assertions.assertThat(updated).isNotNull(),
+				()->Assertions.assertThat(updated.name()).isEqualTo(spaceshipUpdateDto.name())
+				);		
 		Mockito.verify(spaceshipServiceImplMock,times(1)).update(Mockito.any(), Mockito.any());
 	}
 	
