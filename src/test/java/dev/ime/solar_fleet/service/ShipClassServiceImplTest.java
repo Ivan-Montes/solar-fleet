@@ -151,7 +151,11 @@ class ShipClassServiceImplTest {
 		int returnValue = shipClassServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isZero();
-		
+		verify(checkerMock,times(1)).checkObjectId(Mockito.any(ObjectId.class));
+		verify(shipClassRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(spaceshipRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
+		verify(shipClassRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
+
 	}
 	
 	@Test
@@ -163,6 +167,8 @@ class ShipClassServiceImplTest {
 		int returnValue = shipClassServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isEqualTo(1);
+		verify(checkerMock,times(1)).checkObjectId(Mockito.any(ObjectId.class));
+		verify(shipClassRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
 		
 	}
 	
@@ -174,6 +180,7 @@ class ShipClassServiceImplTest {
 		int returnValue = shipClassServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isEqualTo(1);
+		verify(checkerMock,times(1)).checkObjectId(Mockito.any(ObjectId.class));
 		
 	}
 }
