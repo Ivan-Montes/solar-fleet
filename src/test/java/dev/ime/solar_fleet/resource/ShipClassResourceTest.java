@@ -3,6 +3,8 @@ package dev.ime.solar_fleet.resource;
 
 
 import org.assertj.core.api.Assertions;
+import org.bson.types.ObjectId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -19,7 +21,10 @@ import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 
 import static org.hamcrest.Matchers.is;
-
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static io.restassured.RestAssured.given;
 
 import java.util.ArrayList;
@@ -34,12 +39,26 @@ class ShipClassResourceTest {
 	@Inject
 	private ShipClassServiceImpl shipClassServiceImplMock;
 	
+	private List<ShipClass>shipClasses;
+	private final String idTest = "65a909b13b3df36e11df2de9";
+	private final String nameTest = "Class Frigate";
+	private ShipClass shipClassTest;
+	private ShipClassCreateDto shipClassCreateDtoTest;
+	private ShipClassUpdateDto shipClassUpdateDtoTest;	
+	
+	@BeforeEach
+	private void createObjects() {
+		shipClasses = new ArrayList<>();
+		shipClassTest = new ShipClass(new ObjectId(idTest),nameTest);
+		shipClassCreateDtoTest = new ShipClassCreateDto(nameTest);
+		shipClassUpdateDtoTest = new ShipClassUpdateDto(nameTest);
+	}
+	
 	@Test
 	void ShipClassResource_getAll_ReturnEmptyList() {
 		
-		List<ShipClass>list = new ArrayList<>();
 		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
-		Mockito.when(shipClassServiceImplMock.getAll()).thenReturn(list);
+		Mockito.when(shipClassServiceImplMock.getAll()).thenReturn(shipClasses);
 		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
 		
 		given()
@@ -48,7 +67,8 @@ class ShipClassResourceTest {
         .then()
         .statusCode(200)
         .body(is(MsgStatus.EMPTY_LIST));
-				
+		
+		Mockito.verify(shipClassServiceImplMock,times(1)).getAll();	
 	}
 
 	
@@ -75,42 +95,40 @@ class ShipClassResourceTest {
 	@Test
 	void ShipClassResource_getById_ReturnNewObject() {
 		
-		ShipClassCreateDto shipClassCreateDto = new ShipClassCreateDto("TestShipClass");
-		
-		ShipClassDto  saved = given()
-                .contentType(ContentType.JSON)
-                .body(shipClassCreateDto)
-                .post()
-                .then()
-                .statusCode(201)
-                .extract().as(ShipClassDto.class);
-		
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		doReturn(Optional.ofNullable(shipClassTest)).when(shipClassServiceImplMock).getById(Mockito.any(ObjectId.class));		
 		
 		ShipClassDto shipClassDto = given()
 									.when()
-									.get("/{id}", saved.id().toString())
+									.get("/{id}", idTest)
 									.then()
 									.statusCode(200)
 									.extract().as(ShipClassDto.class);
 		
-		Assertions.assertThat(shipClassDto).isNotNull();
-		Assertions.assertThat(shipClassDto.name()).isEqualTo(saved.name());
-		
-		given()
-		.when()
-		.delete("/{id}", saved.id().toString())
-		.then()
-		.statusCode(200);		
+		assertAll(
+				()->Assertions.assertThat(shipClassDto).isNotNull(),
+				()->Assertions.assertThat(shipClassDto.name()).isEqualTo(shipClassTest.getName())
+				);
+		verify(shipClassServiceImplMock,times(1)).getById(Mockito.any(ObjectId.class));					
+
 	}
 	
 	@Test
 	void ShipClassResource_getById_ReturnNotFound() {
 		
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		doReturn(Optional.empty()).when(shipClassServiceImplMock).getById(Mockito.any());
+
 		given()
 		.when()
-		.get("/{id}","65a909b13b3df39999999999")
+		.get("/{id}", idTest)
 		.then()
-		.statusCode(404);
+		.statusCode(404)
+        .body(is(MsgStatus.RESOURCE_NOT_FOUND));
+		
+		Mockito.verify(shipClassServiceImplMock,times(1)).getById(Mockito.any());
 		
 	}
 	
@@ -121,31 +139,32 @@ class ShipClassResourceTest {
 		.when()
 		.get("/{id}","xdxdxdxd")
 		.then()
-		.statusCode(400);
+		.statusCode(400)
+        .body(is(MsgStatus.INVALID_OBJECTID));
 		
 	}
 	
 	@Test
 	void ShipClassResource_create_ReturnObject() {
 		
-		ShipClassCreateDto shipClassCreateDto = new ShipClassCreateDto("TestShipClass");
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		doReturn(Optional.ofNullable(shipClassTest)).when(shipClassServiceImplMock).create(Mockito.any(ShipClass.class));
 		
 		ShipClassDto  saved = given()
                 .contentType(ContentType.JSON)
-                .body(shipClassCreateDto)
+                .body(shipClassCreateDtoTest)
                 .post()
                 .then()
                 .statusCode(201)
                 .extract().as(ShipClassDto.class);
 		
-		Assertions.assertThat(saved).isNotNull();
-		Assertions.assertThat(saved.name()).isEqualTo(shipClassCreateDto.name());
-		
-		given()
-		.when()
-		.delete("/{id}", saved.id().toString())
-		.then()
-		.statusCode(200);	
+		assertAll(
+				()->Assertions.assertThat(saved).isNotNull(),
+				()->Assertions.assertThat(saved.name()).isEqualTo(shipClassCreateDtoTest.name())
+				);
+		Mockito.verify(shipClassServiceImplMock,times(1)).create(Mockito.any(ShipClass.class));
+	
 	}
 
 	@Test
@@ -168,32 +187,24 @@ class ShipClassResourceTest {
 	@Test
 	void ShipClassResource_update_ReturnObject() {
 		
-		ShipClassCreateDto shipClassCreateDto = new ShipClassCreateDto("TestShipClass Name");
-		ShipClassUpdateDto shipClassUpdateDto = new ShipClassUpdateDto("Updated Name");
-		ShipClassDto  saved = given()
-                .contentType(ContentType.JSON)
-                .body(shipClassCreateDto)
-                .post()
-                .then()
-                .statusCode(201)
-                .extract().as(ShipClassDto.class);
-		
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		doReturn(Optional.ofNullable(shipClassTest)).when(shipClassServiceImplMock).update(Mockito.any(ObjectId.class),Mockito.any(ShipClass.class));
+				
 		ShipClassDto updated = given()
                 .contentType(ContentType.JSON)
-                .body(shipClassUpdateDto)
-                .put("/{id}", saved.id().toString())
+                .body(shipClassUpdateDtoTest)
+                .put("/{id}", idTest)
                 .then()
                 .statusCode(200)
-                .extract().as(ShipClassDto.class);		
+                .extract().as(ShipClassDto.class);
 		
-		Assertions.assertThat(updated).isNotNull();
-		Assertions.assertThat(updated.name()).isEqualTo(shipClassUpdateDto.name());
+		assertAll(
+				()->Assertions.assertThat(updated).isNotNull(),
+				()->Assertions.assertThat(updated.name()).isEqualTo(shipClassUpdateDtoTest.name())
+				);
+		Mockito.verify(shipClassServiceImplMock,times(1)).update(Mockito.any(ObjectId.class), Mockito.any(ShipClass.class));
 		
-		given()
-		.when()
-		.delete("/{id}", saved.id().toString())
-		.then()
-		.statusCode(200);
 	}
 
 
@@ -241,4 +252,22 @@ class ShipClassResourceTest {
 		.statusCode(404);
 		
 	}
+	
+	@Test
+	void ShipClassResource_delete_ReturnOk() {
+		
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		doReturn(0).when(shipClassServiceImplMock).delete(Mockito.any(ObjectId.class));
+		
+		given()
+        .delete("/{id}", idTest)                
+		.then()
+		.statusCode(200)
+        .body(is(MsgStatus.ENTITY_DELETED));
+		
+		Mockito.verify(shipClassServiceImplMock,times(1)).delete(Mockito.any(ObjectId.class));
+
+	}
+
 }
