@@ -61,6 +61,7 @@ If you want to learn more about building native executables, please consult http
 
 ## Usage
 
+To create a empty local NOSQL database, I used MongoDb. The default name is "solarfleetdb".
 
 
 ### Related Guides
@@ -71,7 +72,11 @@ If you want to learn more about building native executables, please consult http
 
 ## Features
 
+#### - Unitary Testing with JUnit 5 and Mockito 
 
+#### - Dependency injection and Clean Code respected
+
+#### - Used Sonarqube community for checking the project
 
 
 ## Maintainers
