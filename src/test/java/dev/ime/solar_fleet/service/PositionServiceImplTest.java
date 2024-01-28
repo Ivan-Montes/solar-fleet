@@ -151,6 +151,7 @@ class PositionServiceImplTest {
 		int returnValue = positionServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isZero();
+		verify(crewRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
 		verify(positionRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 	}
 	
@@ -164,6 +165,7 @@ class PositionServiceImplTest {
 		int returnValue = positionServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isEqualTo(1);
+		verify(crewRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
 		verify(positionRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 	}
 	
