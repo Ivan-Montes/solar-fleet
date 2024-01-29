@@ -21,4 +21,9 @@ public class Checker {
 		
 	}
 	
+	public boolean checkStringForValidObjectId(String id) {
+		
+		return id != null && id.matches(RegexPattern.OBJECT_ID);
+		
+	}
 }
