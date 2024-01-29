@@ -23,7 +23,6 @@ public class SpaceshipServiceImpl implements GenericService<Spaceship>{
 	@Inject
 	public SpaceshipServiceImpl(SpaceshipRepository spaceshipRepository, ShipClassRepository shipClassRepository,
 			Checker checker) {
-		super();
 		this.spaceshipRepository = spaceshipRepository;
 		this.shipClassRepository = shipClassRepository;
 		this.checker = checker;
@@ -31,9 +30,14 @@ public class SpaceshipServiceImpl implements GenericService<Spaceship>{
 
 	@Override
 	public List<Spaceship> getAll() {
-		return spaceshipRepository.findAll().list();
+		return spaceshipRepository.listAll();
 	}
 
+	@Override
+	public List<Spaceship> getAllPaged(int page) {
+		return spaceshipRepository.findAll().page(page - 1, 5).list();
+	}
+	
 	@Override
 	public Optional<Spaceship> getById(ObjectId id) {
 		return Optional.ofNullable(spaceshipRepository.findById(id));
@@ -85,6 +89,7 @@ public class SpaceshipServiceImpl implements GenericService<Spaceship>{
 	public int delete(ObjectId id) {
 		return spaceshipRepository.deleteById(id)?0:1;
 	}
+
 
 	
 }
