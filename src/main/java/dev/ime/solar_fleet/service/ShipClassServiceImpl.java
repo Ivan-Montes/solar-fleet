@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import dev.ime.solar_fleet.entity.ShipClass;
 import dev.ime.solar_fleet.repository.ShipClassRepository;
 import dev.ime.solar_fleet.repository.SpaceshipRepository;
-import dev.ime.solar_fleet.tool.Checker;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -19,12 +18,10 @@ public class ShipClassServiceImpl implements GenericService<ShipClass>{
 	
 	private final ShipClassRepository shipClassRepository;
 	private final SpaceshipRepository spaceshipRepository;
-	private final Checker checker;
 	
 	@Inject
-	public ShipClassServiceImpl(ShipClassRepository shipClassRepository, Checker checker,SpaceshipRepository spaceshipRepository) {
+	public ShipClassServiceImpl(ShipClassRepository shipClassRepository, SpaceshipRepository spaceshipRepository) {
 		this.shipClassRepository = shipClassRepository;
-		this.checker = checker;
 		this.spaceshipRepository = spaceshipRepository;
 	}
 
@@ -65,18 +62,13 @@ public class ShipClassServiceImpl implements GenericService<ShipClass>{
 	}
 
 	@Override
-	public int delete(ObjectId id) {		
+	public int delete(ObjectId id) {
 		
-		if ( !checker.checkObjectId(id) ) {
-	        return 1;
-	    }
-		
-		Optional<ShipClass> opt = Optional.ofNullable(shipClassRepository.findById(id));
-		if ( opt.isPresent() && spaceshipRepository.list("shipClassId", id).isEmpty() ) {
+		if ( spaceshipRepository.list("shipClassId", id).isEmpty() ) {
 	        return shipClassRepository.deleteById(id) ? 0 : 1;
 	    }
 		
-		return 1;
+		return 2;
 	}
 
 }
