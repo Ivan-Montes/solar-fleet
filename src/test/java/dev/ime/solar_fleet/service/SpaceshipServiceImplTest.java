@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 
 import dev.ime.solar_fleet.entity.ShipClass;
 import dev.ime.solar_fleet.entity.Spaceship;
+import dev.ime.solar_fleet.repository.CrewRepository;
 import dev.ime.solar_fleet.repository.ShipClassRepository;
 import dev.ime.solar_fleet.repository.SpaceshipRepository;
 import dev.ime.solar_fleet.tool.Checker;
@@ -38,6 +40,9 @@ class SpaceshipServiceImplTest {
 	
 	@InjectMock
 	private ShipClassRepository shipClassRepositoryMock;
+	
+	@InjectMock
+	private  CrewRepository crewRepositoryMock;
 	
 	@InjectMock
 	private Checker checkerMock;
@@ -207,24 +212,28 @@ class SpaceshipServiceImplTest {
 	}
 	
 	@Test
-	void SpaceshipServiceImpl_delete_ReturnInt() {
+	void SpaceshipServiceImpl_delete_ReturnIntOk() {
 		
+		doReturn(Collections.emptyList()).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(ObjectId.class));
 		doReturn(true).when(spaceshipRepositoryMock).deleteById(Mockito.any(ObjectId.class));
 		
 		int returnValue = spaceshipServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isZero();
+		verify(crewRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
 		verify(spaceshipRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 	}
 	
 	@Test
 	void SpaceshipServiceImpl_delete_ReturnIntFalse() {
 		
+		doReturn(Collections.emptyList()).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(ObjectId.class));
 		doReturn(false).when(spaceshipRepositoryMock).deleteById(Mockito.any(ObjectId.class));
 
 		int returnValue = spaceshipServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isEqualTo(1);
+		verify(crewRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
 		verify(spaceshipRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 	}
 }
