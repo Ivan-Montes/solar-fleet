@@ -1,17 +1,30 @@
 package dev.ime.solar_fleet.entity;
 
 import io.quarkus.mongodb.panache.common.MongoEntity;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.util.Objects;
 import org.bson.types.ObjectId;
 
+import dev.ime.solar_fleet.tool.RegexPattern;
 
+@RegisterForReflection
 @MongoEntity(database = "solarfleetdb", collection= "spaceship")
 public class Spaceship {
-	
+
+	@NotNull(message="{NotNull.Entity.id}")
 	private ObjectId id;
-	
+
+	@NotEmpty(message="{NotEmpty.Entity.field]")
+	@Size(min = 1, max = 50, message="{Size.Entity.name}")
+	@Pattern( regexp = RegexPattern.NAME_BASIC, message="{Pattern.Entity.name}")
 	private String name;
-	
+
+	@NotNull(message="{NotNull.Entity.id}")
 	private ObjectId shipClassId;
 
 	public Spaceship() {
