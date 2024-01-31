@@ -2,6 +2,8 @@ package dev.ime.solar_fleet.mapper;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import dev.ime.solar_fleet.dto.spaceship.SpaceshipCreateDto;
 import dev.ime.solar_fleet.dto.spaceship.SpaceshipDto;
 import dev.ime.solar_fleet.dto.spaceship.SpaceshipUpdateDto;
@@ -19,7 +21,7 @@ public class SpaceshipMapper {
 		
 		Spaceship spaceship = new Spaceship();
 		spaceship.setName(dto.name());
-		spaceship.setShipClassId(dto.shipClassId());
+		spaceship.setShipClassId(new ObjectId(dto.shipClassId()));
 		return spaceship;
 	}
 	
@@ -28,7 +30,7 @@ public class SpaceshipMapper {
 		
 		Spaceship spaceship = new Spaceship();
 		spaceship.setName(dto.name());
-		spaceship.setShipClassId(dto.shipClassId());
+		spaceship.setShipClassId(new ObjectId(dto.shipClassId()));
 		return spaceship;
 	}
 	
