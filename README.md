@@ -78,6 +78,10 @@ To create a empty local NOSQL database, I used MongoDb. The default name is "sol
 
 #### - Used Sonarqube community for checking the project
 
+#### - Hibernate validator included
+
+#### - Integrity check in MongoDB before any CRUD operation
+
 
 ## Maintainers
 
@@ -96,6 +100,6 @@ Contributions are always welcome!
 [![Quarkus](https://badgen.net/static/Quarkus/3.6/black)](https://code.quarkus.io/)
 [![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com)
 [![Eclipse](https://badgen.net/badge/icon/eclipse?icon=eclipse&label)](https://https://eclipse.org/)
-[![MongoDB](https://badgen.net/static/MongoDB/Commnunity/green)](https://www.mongodb.com)
+[![MongoDB](https://badgen.net/static/MongoDB/Community/green)](https://www.mongodb.com)
 [![SonarQube](https://badgen.net/badge/icon/sonarqube?icon=sonarqube&label&color=purple)](https://www.sonarsource.com/products/sonarqube/downloads/)
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
