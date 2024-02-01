@@ -61,7 +61,7 @@ If you want to learn more about building native executables, please consult http
 
 ## Usage
 
-To create a empty local NOSQL database, I used MongoDb. The default name is "solarfleetdb".
+To create a empty local NOSQL database, I used MongoDb. The default name is "solarfleetdb" for production, "solarfleetdbdev" for developing and "solarfleetdbtest" for testing. You can find all of this in application.properties
 
 
 ### Related Guides
