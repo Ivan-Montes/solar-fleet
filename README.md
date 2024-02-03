@@ -1,4 +1,4 @@
-# :sun_with_face::rocket: solar-fleet :sun_with_face::rocket:
+# :sunny::rocket: solar-fleet :sunny::rocket:
 
 An API that lists spaceships, implemented using Quarkus, Maven, Java, and MongoDB, mainly.
 
@@ -14,6 +14,10 @@ An API that lists spaceships, implemented using Quarkus, Maven, Java, and MongoD
 
 
 ## Installation
+
+### Creating a database
+
+To create a empty local NOSQL database, I used MongoDb. The default name is "solarfleetdb" for production, "solarfleetdbdev" for developing and "solarfleetdbtest" for testing. You can find all of this in application.properties
 
 ### Running the application in dev mode
 
@@ -61,7 +65,7 @@ If you want to learn more about building native executables, please consult http
 
 ## Usage
 
-To create a empty local NOSQL database, I used MongoDb. The default name is "solarfleetdb" for production, "solarfleetdbdev" for developing and "solarfleetdbtest" for testing. You can find all of this in application.properties
+The best way is to consult SwaggerUI by browsing to `http://localhost:8080/q/swagger-ui/`
 
 
 ### Related Guides
@@ -72,15 +76,17 @@ To create a empty local NOSQL database, I used MongoDb. The default name is "sol
 
 ## Features
 
-#### - Unitary Testing with JUnit 5 and Mockito 
+#### :sun_with_face: Unitary Testing with JUnit 5 and Mockito 
 
-#### - Dependency injection and Clean Code respected
+#### :sun_with_face: Dependency injection and Clean Code respected
 
-#### - Used Sonarqube community for checking the project
+#### :sun_with_face: Used Sonarqube community for checking the project
 
-#### - Hibernate validator included
+#### :sun_with_face: Hibernate validator included
 
-#### - Integrity check in MongoDB before any CRUD operation
+#### :sun_with_face: Integrity check in MongoDB before any CRUD operation
+
+#### :sun_with_face: OpenAPI Documentation with SwaggerUI
 
 
 ## Maintainers
