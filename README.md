@@ -1,6 +1,6 @@
 # :sunny::rocket: solar-fleet :sunny::rocket:
 
-An API that lists spaceships, implemented using Quarkus, Maven, Java, and MongoDB, mainly.
+An API implemented using Quarkus, Maven, Java, and MongoDB, mainly. You could list spaceships, classes, positions and the crew in charge in an amazing empty DB.....yeah, it's empty :sweat:
 
 
 ## Table of contents
