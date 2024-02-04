@@ -122,9 +122,26 @@ class CrewServiceImplTest {
 	
 
 	@Test
+	void CrewServiceImpl_create_ReturnErrorForBothNull() {
+		
+		crewTest.setPositionId(null);
+		crewTest.setSpaceshipId(null);
+		doNothing().when(crewRepositoryMock).persist(Mockito.any(Crew.class));
+
+		Optional<Crew> opt = crewServiceImpl.create(crewTest);
+		
+		assertAll(
+				()->Assertions.assertThat(opt).isNotNull(),
+				()->Assertions.assertThat(opt.get().getName()).isEqualTo(nameTest),
+				()->Assertions.assertThat(opt.get().getLastname()).isEqualTo(lastnameTest)
+			);	
+		verify(crewRepositoryMock,times(1)).persist(Mockito.any(Crew.class));
+	}
+
+	@Test
 	void CrewServiceImpl_create_ReturnErrorForPositionNull() {
 		
-		doReturn(new Spaceship()).when(spaceshipRepositoryMock).findById(Mockito.any(ObjectId.class));
+		crewTest.setSpaceshipId(null);
 		doReturn(null).when(positionRepositoryMock).findById(Mockito.any(ObjectId.class));
 		
 		Optional<Crew> opt = crewServiceImpl.create(crewTest);
@@ -133,7 +150,6 @@ class CrewServiceImplTest {
 				()->Assertions.assertThat(opt).isNotNull(),
 				()->Assertions.assertThat(opt).isEmpty()
 			);	
-		verify(spaceshipRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
 		verify(positionRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
 	}
 	
@@ -173,7 +189,7 @@ class CrewServiceImplTest {
 	}	
 
 	@Test
-	void CrewServiceImpl_update_ReturnErrorForSpaceNull() {
+	void CrewServiceImpl_update_ReturnErrorForSpaceBad() {
 		
 		doReturn(crewTest).when(crewRepositoryMock).findById(Mockito.any(ObjectId.class));
 		doReturn(null).when(spaceshipRepositoryMock).findById(Mockito.any(ObjectId.class));
@@ -185,8 +201,70 @@ class CrewServiceImplTest {
 				()->Assertions.assertThat(opt).isEmpty()
 			);	
 		verify(crewRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(spaceshipRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
 
 	}
 	
+	@Test
+	void CrewServiceImpl_update_ReturnErrorForPositionBad() {
+		
+		doReturn(crewTest).when(crewRepositoryMock).findById(Mockito.any(ObjectId.class));
+		doReturn(new Spaceship()).when(spaceshipRepositoryMock).findById(Mockito.any(ObjectId.class));
+		doReturn(null).when(positionRepositoryMock).findById(Mockito.any(ObjectId.class));
+
+		Optional<Crew> opt = crewServiceImpl.update(objectIdTest, crewTest);
+		
+		assertAll(
+				()->Assertions.assertThat(opt).isNotNull(),
+				()->Assertions.assertThat(opt).isEmpty()
+			);	
+		verify(crewRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(spaceshipRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(positionRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+
+	}
 	
+	@Test
+	void CrewServiceImpl_update_ReturnObjectForOk() {
+		
+		doReturn(crewTest).when(crewRepositoryMock).findById(Mockito.any(ObjectId.class));
+		doReturn(new Spaceship()).when(spaceshipRepositoryMock).findById(Mockito.any(ObjectId.class));
+		doReturn(new Position()).when(positionRepositoryMock).findById(Mockito.any(ObjectId.class));
+		doNothing().when(crewRepositoryMock).persistOrUpdate(Mockito.any(Crew.class));
+
+		Optional<Crew> opt = crewServiceImpl.update(objectIdTest, crewTest);
+		
+		assertAll(
+				()->Assertions.assertThat(opt).isNotNull(),
+				()->Assertions.assertThat(opt.get().getName()).isEqualTo(nameTest),
+				()->Assertions.assertThat(opt.get().getLastname()).isEqualTo(lastnameTest)
+			);
+		verify(crewRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(spaceshipRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(positionRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(crewRepositoryMock,times(1)).persistOrUpdate(Mockito.any(Crew.class));
+
+	}
+	
+	@Test
+	void CrewServiceImpl_delete_ReturnIntForOk() {
+		
+		doReturn(true).when(crewRepositoryMock).deleteById(Mockito.any(ObjectId.class));
+		
+		int returnValue = crewServiceImpl.delete(objectIdTest);
+		
+		Assertions.assertThat(returnValue).isZero();
+		verify(crewRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
+	}
+
+	@Test
+	void CrewServiceImpl_delete_ReturnIntForFalse() {
+		
+		doReturn(false).when(crewRepositoryMock).deleteById(Mockito.any(ObjectId.class));
+		
+		int returnValue = crewServiceImpl.delete(objectIdTest);
+		
+		Assertions.assertThat(returnValue).isEqualTo(1);
+		verify(crewRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
+	}
 }
