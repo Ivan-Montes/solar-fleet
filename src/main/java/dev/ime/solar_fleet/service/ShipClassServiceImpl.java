@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 
 import dev.ime.solar_fleet.entity.ShipClass;
+import dev.ime.solar_fleet.entity.Spaceship;
 import dev.ime.solar_fleet.repository.ShipClassRepository;
 import dev.ime.solar_fleet.repository.SpaceshipRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -63,8 +64,8 @@ public class ShipClassServiceImpl implements GenericService<ShipClass>{
 
 	@Override
 	public int delete(ObjectId id) {
-		
-		if ( spaceshipRepository.list("shipClassId", id).isEmpty() ) {
+		List<Spaceship>listi = spaceshipRepository.list("shipClassId", id);
+		if ( listi.isEmpty() ) {
 	        return shipClassRepository.deleteById(id) ? 0 : 1;
 	    }
 		
