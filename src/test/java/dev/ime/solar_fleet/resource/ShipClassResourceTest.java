@@ -74,21 +74,46 @@ class ShipClassResourceTest {
 	
 	@Test
 	void ShipClassResource_getAll_ReturnList() {
-				given()
+		
+		shipClasses.add(shipClassTest);
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		doReturn(shipClasses).when(shipClassServiceImplMock).getAll();
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		
+		List<ShipClassDto>list = given()
 		        .when()
 		        .get()
 		        .then()
-		        .statusCode(200);
+		        .statusCode(200)
+				.extract()
+		        .body()
+		        .jsonPath()
+		        .getList(".", ShipClassDto.class);
+
+		assertAll(
+			()-> Assertions.assertThat(list).isNotNull(),
+			()-> Assertions.assertThat(list).hasSize(1)
+			);
+		Mockito.verify(shipClassServiceImplMock, times(1)).getAll();
 	}
 
 	@Test
 	void ShipClassResource_getAll_ReturnListPaged() {
-				given()
-				.queryParam("page", 1)
-		        .when()
-		        .get()
-		        .then()
-		        .statusCode(200);
+		
+		shipClasses.add(shipClassTest);
+		shipClassServiceImplMock = Mockito.mock(ShipClassServiceImpl.class);
+		doReturn(shipClasses).when(shipClassServiceImplMock).getAllPaged(Mockito.anyInt());
+		QuarkusMock.installMockForType(shipClassServiceImplMock, ShipClassServiceImpl.class);
+		
+		given()
+		.queryParam("page", 1)
+        .when()
+        .get()
+        .then()
+        .statusCode(200);
+		
+		Mockito.verify(shipClassServiceImplMock, times(1)).getAllPaged(Mockito.anyInt());
+
 	}	
 
 
