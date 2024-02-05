@@ -13,7 +13,7 @@ import org.bson.types.ObjectId;
 import dev.ime.solar_fleet.tool.RegexPattern;
 
 @RegisterForReflection
-@MongoEntity(database = "solarfleetdb", collection= "spaceship")
+@MongoEntity( collection= "spaceship" )
 public class Spaceship {
 
 	@NotNull(message="{NotNull.Entity.id}")
