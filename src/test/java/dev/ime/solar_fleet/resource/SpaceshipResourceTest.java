@@ -36,30 +36,48 @@ class SpaceshipResourceTest {
 
 	@InjectSpy
 	private SpaceshipServiceImpl spaceshipServiceImplMock;
-	private final String idTest = "65a909b13b3df36e11df2de9";
 	private final String nameTest = "BlueNoah";
 	private final String idTestError = "65a909b13b3df36";
 	private Spaceship spaceshipTest;
 	private List<Spaceship> spaceships;
 	private SpaceshipCreateDto spaceshipCreateDto;
 	private SpaceshipUpdateDto spaceshipUpdateDto;
+	private ObjectId objectIdTest;
+	private ObjectId objectIdTest2;
 	
 	@BeforeEach
 	private void createObjects() {
+		
+		objectIdTest = ObjectId.get();
+		objectIdTest2 = ObjectId.get();
 		spaceships = new ArrayList<>();
-		spaceshipTest = new Spaceship(new ObjectId(idTest),nameTest,new ObjectId(idTest));
-		spaceshipCreateDto = new SpaceshipCreateDto(nameTest, idTest);
-		spaceshipUpdateDto = new SpaceshipUpdateDto(nameTest, idTest);
+		spaceshipTest = new Spaceship(objectIdTest, nameTest, objectIdTest2);
+		spaceshipCreateDto = new SpaceshipCreateDto(nameTest, objectIdTest2.toString());
+		spaceshipUpdateDto = new SpaceshipUpdateDto(nameTest, objectIdTest2.toString());
 
 	}
 	
 	@Test
 	void SpaceshipResource_getAll_ReturnList() {
-				given()
+		
+		spaceships.add(spaceshipTest);
+		doReturn(spaceships).when(spaceshipServiceImplMock).getAll();
+		
+		List<SpaceshipDto>list = given()
 		        .when()
 		        .get()
 		        .then()
-		        .statusCode(200);
+		        .statusCode(200)
+				.extract()
+		        .body()
+		        .jsonPath()
+		        .getList(".", SpaceshipDto.class);
+
+		assertAll(
+				()-> Assertions.assertThat(list).isNotNull(),
+				()-> Assertions.assertThat(list).hasSize(1)
+				);
+		Mockito.verify(spaceshipServiceImplMock,times(1)).getAll();
 	}
 	
 	@Test
@@ -81,12 +99,18 @@ class SpaceshipResourceTest {
 	@Test
 	void SpaceshipResource_getAll_ReturnListPaged() {
 		
+		spaceships.add(spaceshipTest);
+		doReturn(spaceships).when(spaceshipServiceImplMock).getAllPaged(Mockito.anyInt());
+		
 				given()
 				.queryParam("page", 1)
 		        .when()
 		        .get()
 		        .then()
 		        .statusCode(200);
+				
+		Mockito.verify(spaceshipServiceImplMock,times(1)).getAllPaged(Mockito.anyInt());
+
 	}
 	
 	@Test
@@ -96,7 +120,7 @@ class SpaceshipResourceTest {
 		
 		SpaceshipDto spaceshipDto = given()
 		.when()
-		.get("/{id}", idTest)
+		.get("/{id}", objectIdTest.toString())
 		.then()
 		.statusCode(200)
 		.extract().as(SpaceshipDto.class);
@@ -128,7 +152,7 @@ class SpaceshipResourceTest {
 		
 		given()
 		.when()
-		.get("/{id}", idTest)
+		.get("/{id}", objectIdTest.toString())
 		.then()
 		.statusCode(404)
         .body(is(MsgStatus.RESOURCE_NOT_FOUND));
@@ -153,7 +177,7 @@ class SpaceshipResourceTest {
 				()->Assertions.assertThat(spaceshipDto).isNotNull(),
 				()->Assertions.assertThat(spaceshipDto.name()).isEqualTo(spaceshipCreateDto.name())
 				);
-		Mockito.verify(spaceshipServiceImplMock,times(1)).create(Mockito.any());
+		Mockito.verify(spaceshipServiceImplMock,times(1)).create(Mockito.any(Spaceship.class));
 
 	}
 	
@@ -170,7 +194,7 @@ class SpaceshipResourceTest {
 		.statusCode(404)
         .body(is(MsgStatus.RESOURCE_NOT_FOUND));
 		
-		Mockito.verify(spaceshipServiceImplMock,times(1)).create(Mockito.any());
+		Mockito.verify(spaceshipServiceImplMock,times(1)).create(Mockito.any(Spaceship.class));
 
 	}
 	
@@ -182,7 +206,7 @@ class SpaceshipResourceTest {
 		SpaceshipDto updated = given()
 				.contentType(ContentType.JSON)
 				.body(spaceshipUpdateDto)
-				.put("/{id}", idTest)
+				.put("/{id}", objectIdTest.toString())
 				.then()
 				.statusCode(200)
 		        .extract().as(SpaceshipDto.class);
@@ -215,7 +239,7 @@ class SpaceshipResourceTest {
 		given()
 		.contentType(ContentType.JSON)
 		.body(spaceshipUpdateDto)
-		.put("/{id}", idTest)
+		.put("/{id}", objectIdTest.toString())
 		.then()
 		.statusCode(404)
         .body(is(MsgStatus.RESOURCE_NOT_FOUND));
@@ -230,7 +254,7 @@ class SpaceshipResourceTest {
 		doReturn(0).when(spaceshipServiceImplMock).delete(Mockito.any(ObjectId.class));
 		
 		given()
-        .delete("/{id}", idTest)                
+        .delete("/{id}", objectIdTest.toString())                
 		.then()
 		.statusCode(200)
         .body(is(MsgStatus.ENTITY_DELETED));
@@ -255,7 +279,7 @@ class SpaceshipResourceTest {
 		doReturn(1).when(spaceshipServiceImplMock).delete(Mockito.any(ObjectId.class));
 
 		given()
-        .delete("/{id}", idTest)                
+        .delete("/{id}", objectIdTest.toString())                
 		.then()
 		.statusCode(404)
         .body(is(MsgStatus.ENTITY_NOT_DELETED));
