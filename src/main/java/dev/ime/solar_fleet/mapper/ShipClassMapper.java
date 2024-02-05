@@ -26,14 +26,6 @@ public class ShipClassMapper {
 		return list.stream().map(this::toShipClassDto).toList();
 	}
 	
-	public ShipClass toShipClass(ShipClassDto shipClassDto) {
-		
-		ShipClass shipClass = new ShipClass();
-		shipClass.setId(shipClassDto.id());
-		shipClass.setName(shipClassDto.name());
-		return shipClass;
-	}
-	
 	public ShipClass toShipClassFromShipClassCreateDto(ShipClassCreateDto shipClassCreateDto) {
 		
 		ShipClass shipClass = new ShipClass();
