@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 
 
 @RegisterForReflection
-@MongoEntity(database = "solarfleetdb", collection= "crew")
+@MongoEntity( collection= "crew" )
 public class Crew {
 	
 	@NotNull(message="{NotNull.Entity.id}")
