@@ -69,13 +69,14 @@ class PositionResourceTest {
 		Mockito.verify(positionServiceImpl,times(1)).getAll();
 
 	}
+	
 	@Test
 	void PositionResource_getAll_ReturnList() {
 		
 		positions.add(positionTest);
 		doReturn(positions).when(positionServiceImpl).getAll();
 		
-		List<Position>list = given()
+		List<PositionDto>list = given()
 						.when()
 						.get()
 						.then()
@@ -83,7 +84,7 @@ class PositionResourceTest {
 						.extract()
 				        .body()
 				        .jsonPath()
-				        .getList(".", Position.class);
+				        .getList(".", PositionDto.class);
 		
 		assertAll(
 				()-> Assertions.assertThat(list).isNotNull(),
@@ -92,6 +93,7 @@ class PositionResourceTest {
 		Mockito.verify(positionServiceImpl,times(1)).getAll();
 
 	}
+	
 	@Test
 	void PositionResource_getAll_ReturnListPaged() {
 		
@@ -163,7 +165,7 @@ class PositionResourceTest {
 		
 		doReturn(Optional.ofNullable(positionTest)).when(positionServiceImpl).create(Mockito.any(Position.class));
 		
-		PositionDto positionDto = given()
+		PositionDto dto = given()
 						.contentType(ContentType.JSON)
 						.body(positionCreateDtoTest)
 						.post()
@@ -171,8 +173,8 @@ class PositionResourceTest {
 						.statusCode(201)
 						.extract().as(PositionDto.class);
 		assertAll(
-		()->Assertions.assertThat(positionDto).isNotNull(),
-		()->Assertions.assertThat(positionDto.name()).isEqualTo(positionCreateDtoTest.name())
+		()->Assertions.assertThat(dto).isNotNull(),
+		()->Assertions.assertThat(dto.name()).isEqualTo(positionCreateDtoTest.name())
 		);
 		Mockito.verify(positionServiceImpl,times(1)).create(Mockito.any(Position.class));
 		
@@ -200,7 +202,7 @@ class PositionResourceTest {
 		
 		doReturn(Optional.ofNullable(positionTest)).when(positionServiceImpl).update(Mockito.any(ObjectId.class),Mockito.any(Position.class));
 		
-		PositionDto positionDto = given()
+		PositionDto dto = given()
 						.contentType(ContentType.JSON)
 						.body(positionUpdateDtoTest)
 						.put("/{id}", idTest)
@@ -208,8 +210,8 @@ class PositionResourceTest {
 						.statusCode(200)
 						.extract().as(PositionDto.class);
 		assertAll(
-		()->Assertions.assertThat(positionDto).isNotNull(),
-		()->Assertions.assertThat(positionDto.name()).isEqualTo(positionUpdateDtoTest.name())
+		()->Assertions.assertThat(dto).isNotNull(),
+		()->Assertions.assertThat(dto.name()).isEqualTo(positionUpdateDtoTest.name())
 		);
 		Mockito.verify(positionServiceImpl,times(1)).update(Mockito.any(ObjectId.class),Mockito.any(Position.class));
 	}
