@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import dev.ime.solar_fleet.entity.ShipClass;
+import dev.ime.solar_fleet.entity.Spaceship;
 import dev.ime.solar_fleet.repository.ShipClassRepository;
 import dev.ime.solar_fleet.repository.SpaceshipRepository;
-import dev.ime.solar_fleet.tool.Checker;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -35,21 +35,23 @@ class ShipClassServiceImplTest {
 	@InjectMock
 	private SpaceshipRepository spaceshipRepositoryMock;
 	@InjectMock
-	private ShipClassRepository shipClassRepositoryMock;
-	@InjectMock
-	private Checker checkerMock;
+	private ShipClassRepository shipClassRepositoryMock;	
 	
 	private List<ShipClass>shipclasses;
+	private List<Spaceship>spaceships;
 	private final String idTest = "65a909b13b3df36e11df2de9";
 	private final String nameTest = "Class Frigate";
 	private ShipClass shipClassTest;
 	private ObjectId objectIdTest;
+	private Spaceship spaceshipTest;
 	
 	@BeforeEach
 	private void createObjects() {
 		shipclasses = new ArrayList<>();
+		spaceships = new ArrayList<>();
 		shipClassTest = new ShipClass(new ObjectId(idTest),nameTest);
 		objectIdTest = new ObjectId(idTest);
+		spaceshipTest = new Spaceship(ObjectId.get(),nameTest,ObjectId.get());
 	}
 	
 	@Test
@@ -141,46 +143,44 @@ class ShipClassServiceImplTest {
 
 
 	@Test
-	void ShipClassServiceImpl_delete_ReturnInt() {
+	void ShipClassServiceImpl_delete_ReturnIntOk() {
 		
-		doReturn(true).when(checkerMock).checkObjectId(Mockito.any(ObjectId.class));
-		doReturn(shipClassTest).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
-		doReturn(Collections.emptyList()).when(spaceshipRepositoryMock).list(Mockito.anyString(), Mockito.any(ObjectId.class));
+		doReturn(Collections.emptyList()).when(spaceshipRepositoryMock).list(Mockito.anyString(), Mockito.any(Object[].class));
 		doReturn(true).when(shipClassRepositoryMock).deleteById(Mockito.any(ObjectId.class));
 		
 		int returnValue = shipClassServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isZero();
-		verify(checkerMock,times(1)).checkObjectId(Mockito.any(ObjectId.class));
-		verify(shipClassRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
-		verify(spaceshipRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
+		verify(spaceshipRepositoryMock,times(1)).list(Mockito.anyString(), Mockito.any(Object[].class));
 		verify(shipClassRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 
 	}
 	
 	@Test
-	void ShipClassServiceImpl_delete_ReturnIntNotFound() {
+	void ShipClassServiceImpl_delete_ReturnIntFail() {		
 		
-		doReturn(true).when(checkerMock).checkObjectId(Mockito.any(ObjectId.class));
-		doReturn(null).when(shipClassRepositoryMock).findById(Mockito.any(ObjectId.class));
+		doReturn(Collections.emptyList()).when(spaceshipRepositoryMock).list(Mockito.anyString(), Mockito.any(Object[].class));
+		doReturn(false).when(shipClassRepositoryMock).deleteById(Mockito.any(ObjectId.class));
 		
 		int returnValue = shipClassServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isEqualTo(1);
-		verify(checkerMock,times(1)).checkObjectId(Mockito.any(ObjectId.class));
-		verify(shipClassRepositoryMock,times(1)).findById(Mockito.any(ObjectId.class));
+		verify(spaceshipRepositoryMock,times(1)).list(Mockito.anyString(), Mockito.any(Object[].class));
+		verify(shipClassRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
+
+	}
+
+	@Test
+	void ShipClassServiceImpl_delete_ReturnIntNotEmptyList() {		
 		
+		spaceships.add(spaceshipTest);
+		doReturn(spaceships).when(spaceshipRepositoryMock).list(Mockito.anyString(), Mockito.any(Object[].class));
+
+		int returnValue = shipClassServiceImpl.delete(objectIdTest);
+		
+		Assertions.assertThat(returnValue).isEqualTo(2);
+		verify(spaceshipRepositoryMock,times(1)).list(Mockito.anyString(), Mockito.any(Object[].class));
+
 	}
 	
-	@Test
-	void ShipClassServiceImpl_delete_ReturnIntBadObjectId() {
-		
-		doReturn(false).when(checkerMock).checkObjectId(Mockito.any(ObjectId.class));
-		
-		int returnValue = shipClassServiceImpl.delete(objectIdTest);
-		
-		Assertions.assertThat(returnValue).isEqualTo(1);
-		verify(checkerMock,times(1)).checkObjectId(Mockito.any(ObjectId.class));
-		
-	}
 }
