@@ -15,11 +15,14 @@ import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import dev.ime.solar_fleet.entity.Crew;
 import dev.ime.solar_fleet.entity.Position;
 import dev.ime.solar_fleet.repository.CrewRepository;
 import dev.ime.solar_fleet.repository.PositionRepository;
+import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -38,16 +41,22 @@ class PositionServiceImplTest {
 	@InjectMock
 	private CrewRepository crewRepositoryMock;
 	
+	@Mock
+	private PanacheQuery<Position> panacheQuery;
+	
 	private List<Position> positions;
+	private List<Crew>crewList;
 	private final String idTest = "65a909b13b3df36e11df2de9";
 	private final String nameTest = "Sargento";
 	private Position positionTest;
 	private ObjectId objectIdTest;
 	
+	@SuppressWarnings("unchecked")
 	@BeforeEach
 	private void createObjects() {
-		
+		panacheQuery = Mockito.mock(PanacheQuery.class);
 		positions  = new ArrayList<>();
+		crewList =  new ArrayList<>();
 		objectIdTest = new ObjectId(idTest);
 		positionTest = new Position(new ObjectId(idTest), nameTest);
 		
@@ -65,6 +74,26 @@ class PositionServiceImplTest {
 				()-> Assertions.assertThat(list).hasSize(1)
 				);
 		verify(positionRepositoryMock,times(1)).listAll();
+	}
+	
+
+	@Test
+	void PositionServiceImpl_getAllPaged_ReturnList() {	
+
+		positions.add(positionTest);
+		Mockito.when(positionRepositoryMock.findAll()).thenReturn(panacheQuery);
+		Mockito.when(panacheQuery.page(Mockito.anyInt(), Mockito.anyInt())).thenReturn(panacheQuery);
+		Mockito.when(panacheQuery.list()).thenReturn(positions);
+
+		List<Position>list = positionServiceImpl.getAllPaged(1);
+		
+		assertAll(
+				()-> Assertions.assertThat(list).isNotNull(),
+				()-> Assertions.assertThat(list).hasSize(1)
+				);
+		verify(panacheQuery,times(1)).page(Mockito.anyInt(), Mockito.anyInt());
+		verify(panacheQuery,times(1)).list();
+		verify(positionRepositoryMock,times(1)).findAll();
 	}
 
 	@Test
@@ -143,30 +172,42 @@ class PositionServiceImplTest {
 	}
 	
 	@Test
-	void PositionServiceImpl_delete_ReturnOk() {
+	void PositionServiceImpl_delete_ReturnIntOk() {
 		
-		doReturn(Collections.emptyList()).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(ObjectId.class));
+		doReturn(Collections.emptyList()).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(Object[].class));
 		doReturn(true).when(positionRepositoryMock).deleteById(Mockito.any(ObjectId.class));
 		
 		int returnValue = positionServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isZero();
-		verify(crewRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
+		verify(crewRepositoryMock,times(1)).list(Mockito.anyString(), Mockito.any(Object[].class));
 		verify(positionRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 	}
 	
 
 	@Test
-	void PositionServiceImpl_delete_Return1() {
+	void PositionServiceImpl_delete_ReturnIntFail() {
 		
-		doReturn(Collections.emptyList()).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(ObjectId.class));
+		doReturn(Collections.emptyList()).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(Object[].class));
 		doReturn(false).when(positionRepositoryMock).deleteById(Mockito.any(ObjectId.class));
 		
 		int returnValue = positionServiceImpl.delete(objectIdTest);
 		
 		Assertions.assertThat(returnValue).isEqualTo(1);
-		verify(crewRepositoryMock,times(1)).list(Mockito.any(), Mockito.any(Object.class));
+		verify(crewRepositoryMock,times(1)).list(Mockito.anyString(), Mockito.any(Object[].class));
 		verify(positionRepositoryMock,times(1)).deleteById(Mockito.any(ObjectId.class));
 	}
 	
+
+	@Test
+	void PositionServiceImpl_delete_ReturnIntNotEmptyList() {
+		
+		crewList.add(new Crew());
+		doReturn(crewList).when(crewRepositoryMock).list(Mockito.anyString(), Mockito.any(Object[].class));
+		
+		int returnValue = positionServiceImpl.delete(objectIdTest);
+		
+		Assertions.assertThat(returnValue).isEqualTo(2);
+		verify(crewRepositoryMock,times(1)).list(Mockito.anyString(), Mockito.any(Object[].class));
+	}
 }
