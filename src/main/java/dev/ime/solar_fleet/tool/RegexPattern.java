@@ -3,9 +3,7 @@ package dev.ime.solar_fleet.tool;
 
 public class RegexPattern {
 
-	private RegexPattern() {
-		super();
-	}
+	private RegexPattern() {}
 	
 	public static final String NAME_BASIC = "[a-zA-ZñÑáéíóúÁÉÍÓÚ\\s\\-\\.&,:]+";
 	public static final String NAME_FULL = "[a-zA-ZñÑáéíóúÁÉÍÓÚ\\s\\-\\.&,:]{1,50}";
